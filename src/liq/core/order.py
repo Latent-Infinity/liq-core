@@ -61,8 +61,8 @@ class OrderRequest(BaseModel):
     timestamp: datetime
     strategy_id: str | None = None
     confidence: float | None = None
-    tags: dict | None = None
-    metadata: dict | None = None
+    tags: dict[str, str] | None = None
+    metadata: dict[str, str] | None = None
 
     @field_validator("symbol")
     @classmethod
