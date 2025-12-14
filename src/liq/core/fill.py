@@ -52,6 +52,8 @@ class Fill(BaseModel):
     commission: Decimal
     slippage: Decimal | None = None
     realized_pnl: Decimal | None = None
+    provider: str | None = None
+    is_partial: bool | None = None
     timestamp: datetime
 
     @field_validator("symbol")
@@ -121,3 +123,8 @@ class Fill(BaseModel):
     def serialize_side(self, v: OrderSide) -> str:
         """Serialize OrderSide as string."""
         return str(v)
+
+    @field_serializer("provider")
+    def serialize_provider(self, v: str | None) -> str | None:
+        """Serialize provider."""
+        return v

@@ -6,6 +6,8 @@ definitions used across the entire LIQ ecosystem.
 """
 
 from liq.core.bar import Bar
+from liq.core.cash_movement import CashMovement
+from liq.core.corporate_action import CorporateAction
 from liq.core.enums import (
     AssetClass,
     Currency,
@@ -18,23 +20,33 @@ from liq.core.enums import (
 )
 from liq.core.fill import Fill
 from liq.core.instrument import Instrument, ProviderMetadata
+from liq.core.ledger import LedgerEntry
 from liq.core.order import OrderRequest
 from liq.core.portfolio import PortfolioState
 from liq.core.position import Position
 from liq.core.quote import Quote
+from liq.core.results import BatchResult, FetchResult, UpdateResult
+from liq.core.trade import Trade
 from liq.core.symbols import normalize_symbol, parse_symbol, validate_symbol
 from liq.core.validation import ValidationResult
 
 __all__ = [
     # Models
     "Bar",
+    "BatchResult",
+    "CashMovement",
+    "CorporateAction",
+    "FetchResult",
     "Fill",
     "Instrument",
+    "LedgerEntry",
     "OrderRequest",
     "PortfolioState",
     "Position",
     "ProviderMetadata",
     "Quote",
+    "Trade",
+    "UpdateResult",
     "ValidationResult",
     # Enums
     "AssetClass",

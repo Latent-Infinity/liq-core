@@ -89,7 +89,7 @@ market_order = OrderRequest(
     timestamp=datetime.now(UTC),
 )
 
-# Limit order (requires limit_price)
+# Limit order (requires limit_price) with optional external id
 limit_order = OrderRequest(
     symbol="EUR_USD",
     side=OrderSide.SELL,
@@ -97,6 +97,7 @@ limit_order = OrderRequest(
     quantity=Decimal("10000"),
     limit_price=Decimal("1.1050"),
     timestamp=datetime.now(UTC),
+    external_client_order_id="my-ext-id-123",
 )
 ```
 
@@ -117,10 +118,11 @@ normalize_symbol("BTC/USDT", AssetClass.CRYPTO) # "BTC-USDT"
 normalize_symbol("aapl", AssetClass.EQUITY)    # "AAPL"
 ```
 
-### Working with Positions
+### Working with Positions and PortfolioState
 
 ```python
-from liq.core import Position
+from liq.core import Position, PortfolioState, Currency, OrderRequest, OrderSide, OrderType
+from datetime import datetime, UTC
 from decimal import Decimal
 
 position = Position(
@@ -128,28 +130,51 @@ position = Position(
     quantity=Decimal("10000"),
     avg_entry_price=Decimal("1.1000"),
     realized_pnl=Decimal("0"),
+    timestamp=datetime.now(UTC),
+    asset_class="forex",
 )
 
-# Calculate unrealized P&L
+portfolio = PortfolioState(
+    cash=Decimal("100000"),
+    positions={"EUR_USD": position},
+    pending_orders=[
+        OrderRequest(
+            symbol="EUR_USD",
+            side=OrderSide.BUY,
+            order_type=OrderType.MARKET,
+            quantity=Decimal("5000"),
+            timestamp=datetime.now(UTC),
+        )
+    ],
+    currency=Currency.USD,
+    timestamp=datetime.now(UTC),
+)
+
+# Equity and symbols
+print(f"Equity: {portfolio.equity}")
+print(f"Symbols: {portfolio.symbols}")
+
+# Unrealized P&L
 current_price = Decimal("1.1050")
 unrealized = position.unrealized_pnl(current_price)
 print(f"Unrealized P&L: {unrealized}")  # 50.00 (in quote currency)
-
-# Market value
-print(f"Market Value: {position.market_value(current_price)}")  # 11050.00
 ```
 
 ## Available Models
 
 | Model | Description |
 |-------|-------------|
-| `Bar` | OHLCV candlestick data with computed properties (range, body, midrange) |
+| `Bar` | OHLCV candlestick data with computed properties (range, body, midrange, true-range helpers) |
 | `Quote` | Bid/ask quote with computed spread metrics |
 | `OrderRequest` | Order specification with type-specific validation |
-| `Fill` | Executed trade with commission and slippage |
-| `Position` | Current holding with P&L calculations |
-| `PortfolioState` | Aggregated positions with cash and margin |
+| `Fill` | Executed trade with commission, slippage, provider, partial flag |
+| `Position` | Current holding with P&L calculations and asset class |
+| `PortfolioState` | Aggregated positions with cash, pending orders, currency |
 | `Instrument` | Instrument metadata (tick size, lot size, trading hours) |
+| `Trade` | Round-trip trade summary |
+| `CashMovement` | Deposits, withdrawals, dividends, interest, fees |
+| `CorporateAction` | Splits, dividends, spinoffs, mergers |
+| `LedgerEntry` | Ledger entries with conditionally required payloads |
 
 ## Available Enums
 

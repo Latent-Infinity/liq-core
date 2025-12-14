@@ -162,8 +162,8 @@ class TestPositionDerivedFields:
             realized_pnl=Decimal("0"),
             timestamp=sample_timestamp,
         )
-        # market_value = abs(-10000) * 1.1000 = 11000
-        assert position.market_value == Decimal("11000")
+        # market_value is signed: quantity * price = -10000 * 1.1 = -11000
+        assert position.market_value == Decimal("-11000.0000")
 
     def test_unrealized_pnl_long_profit(self, sample_timestamp: datetime) -> None:
         position = Position(

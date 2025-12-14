@@ -8,6 +8,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
 
+from liq.core.enums import AssetClass
 from liq.core.symbols import validate_symbol
 
 
@@ -46,6 +47,8 @@ class Position(BaseModel):
     realized_pnl: Decimal
     timestamp: datetime
     current_price: Decimal | None = None
+    asset_class: AssetClass | None = None
+    avg_entry_price: Decimal | None = None
 
     @field_validator("symbol")
     @classmethod
@@ -80,6 +83,14 @@ class Position(BaseModel):
             raise ValueError("current_price must be >= 0")
         return v
 
+    @field_validator("avg_entry_price")
+    @classmethod
+    def sync_avg_entry_price(cls, v: Decimal | None, info) -> Decimal | None:  # type: ignore[override]
+        """Mirror avg_entry_price with average_price when provided."""
+        if v is None:
+            return v
+        return v
+
     @property
     def is_long(self) -> bool:
         """Check if position is long (positive quantity)."""
@@ -97,9 +108,9 @@ class Position(BaseModel):
 
     @property
     def market_value(self) -> Decimal:
-        """Calculate market value: abs(quantity) * mark price."""
+        """Calculate signed market value: quantity * mark price."""
         mark_price = self.current_price if self.current_price is not None else self.average_price
-        return abs(self.quantity) * mark_price
+        return self.quantity * mark_price
 
     def unrealized_pnl(self, current_price: Decimal) -> Decimal:
         """Calculate unrealized P&L given current price.
@@ -120,3 +131,17 @@ class Position(BaseModel):
     def serialize_decimal(self, v: Decimal | None) -> str | None:
         """Serialize Decimal as string to preserve precision."""
         return str(v) if v is not None else None
+
+    @property
+    def avg_entry(self) -> Decimal:
+        """Expose avg_entry_price alias."""
+        return self.avg_entry_price if self.avg_entry_price is not None else self.average_price
+
+    @classmethod
+    def model_validate(cls, *args, **kwargs):  # type: ignore[override]
+        obj = super().model_validate(*args, **kwargs)
+        if obj.avg_entry_price is not None and obj.average_price != obj.avg_entry_price:
+            object.__setattr__(obj, "average_price", obj.avg_entry_price)
+        elif obj.avg_entry_price is None:
+            object.__setattr__(obj, "avg_entry_price", obj.average_price)
+        return obj

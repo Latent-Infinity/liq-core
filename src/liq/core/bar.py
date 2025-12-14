@@ -4,8 +4,9 @@ The Bar model represents a single time period of trading activity,
 with Open, High, Low, Close prices and Volume.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
+from typing import Optional
 
 from pydantic import (
     BaseModel,
@@ -70,6 +71,8 @@ class Bar(BaseModel):
         """Ensure timestamp is timezone-aware."""
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("timestamp must be timezone-aware (UTC expected)")
+        if v.utcoffset() != timezone.utc.utcoffset(v):
+            raise ValueError("timestamp must be UTC")
         return v
 
     @field_validator("open", "high", "low", "close")
@@ -119,6 +122,24 @@ class Bar(BaseModel):
         The range represents intrabar price movement.
         """
         return self.high - self.low
+
+    def true_range_midrange(self, prev_midrange: Optional[Decimal]) -> Decimal:
+        """Gap-aware true range using midrange vs prior bar."""
+        current_mid = self.midrange
+        if prev_midrange is None:
+            return self.range
+        return max(self.range, abs(current_mid - prev_midrange))
+
+    def true_range_hl(
+        self, prev_high: Optional[Decimal], prev_low: Optional[Decimal]
+    ) -> Decimal:
+        """Gap-aware true range using high/low vs prior bar."""
+        candidates = [self.range]
+        if prev_high is not None:
+            candidates.append(abs(self.high - prev_high))
+        if prev_low is not None:
+            candidates.append(abs(self.low - prev_low))
+        return max(candidates)
 
     @field_serializer("open", "high", "low", "close", "volume")
     def serialize_decimal(self, v: Decimal) -> str:

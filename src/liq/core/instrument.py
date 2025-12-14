@@ -9,6 +9,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
+from liq.core.enums import AssetClass
+
 
 class Instrument(BaseModel):
     """Represents a tradeable financial instrument.
@@ -42,7 +44,7 @@ class Instrument(BaseModel):
     symbol: str
     provider: str
     canonical_symbol: str
-    asset_class: str
+    asset_class: AssetClass
     name: str
     base_currency: str
     quote_currency: str
@@ -86,7 +88,7 @@ class ProviderMetadata(BaseModel):
     )
 
     provider_name: str
-    asset_classes: list[str]
+    asset_classes: list[AssetClass]
     api_endpoint: str
     rate_limit_per_minute: int = Field(gt=0)
     enabled: bool

@@ -7,8 +7,10 @@ at a point in time, including cash and all positions.
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
+from liq.core.enums import Currency
+from liq.core.order import OrderRequest
 from liq.core.position import Position
 from liq.core.symbols import validate_symbol
 
@@ -48,6 +50,8 @@ class PortfolioState(BaseModel):
     buying_power: Decimal | None = None
     margin_used: Decimal | None = None
     day_trades_remaining: int | None = None
+    pending_orders: list[OrderRequest] = Field(default_factory=list)
+    currency: Currency = Currency.USD
     timestamp: datetime
 
     @field_validator("positions", mode="before")
@@ -129,3 +133,8 @@ class PortfolioState(BaseModel):
     def serialize_decimal(self, v: Decimal | None) -> str | None:
         """Serialize Decimal as string to preserve precision."""
         return str(v) if v is not None else None
+
+    @field_serializer("pending_orders")
+    def serialize_orders(self, v: list[OrderRequest]) -> list[dict]:
+        """Serialize pending orders as dicts."""
+        return [order.model_dump() for order in v]

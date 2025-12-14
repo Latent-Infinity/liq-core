@@ -6,6 +6,7 @@ It captures all parameters needed to submit an order to a broker.
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import (
@@ -51,6 +52,7 @@ class OrderRequest(BaseModel):
     )
 
     client_order_id: UUID = Field(default_factory=uuid4)
+    external_client_order_id: str | None = None
     symbol: str
     side: OrderSide
     order_type: OrderType
@@ -62,7 +64,7 @@ class OrderRequest(BaseModel):
     strategy_id: str | None = None
     confidence: float | None = None
     tags: dict[str, str] | None = None
-    metadata: dict[str, str] | None = None
+    metadata: dict[str, Any] | None = None
 
     @field_validator("symbol")
     @classmethod
@@ -135,6 +137,11 @@ class OrderRequest(BaseModel):
     def serialize_decimal(self, v: Decimal | None) -> str | None:
         """Serialize Decimal as string to preserve precision."""
         return str(v) if v is not None else None
+
+    @field_serializer("external_client_order_id")
+    def serialize_external_id(self, v: str | None) -> str | None:
+        """Serialize external client id."""
+        return v
 
     @field_serializer("side")
     def serialize_side(self, v: OrderSide) -> str:
