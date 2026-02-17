@@ -6,7 +6,13 @@ The Position model represents a holding in a single instrument.
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict, field_serializer, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    ValidationInfo,
+    field_serializer,
+    field_validator,
+)
 
 from liq.core.enums import AssetClass
 from liq.core.symbols import validate_symbol
@@ -85,11 +91,13 @@ class Position(BaseModel):
 
     @field_validator("avg_entry_price")
     @classmethod
-    def sync_avg_entry_price(cls, v: Decimal | None, info) -> Decimal | None:  # type: ignore[override]
+    def sync_avg_entry_price(
+        cls,
+        v: Decimal | None,
+        info: ValidationInfo,
+    ) -> Decimal | None:
         """Mirror avg_entry_price with average_price when provided."""
-        if v is None:
-            return v
-        return v
+        return v if v is not None else info.data.get("average_price")
 
     @property
     def is_long(self) -> bool:
@@ -138,7 +146,7 @@ class Position(BaseModel):
         return self.avg_entry_price if self.avg_entry_price is not None else self.average_price
 
     @classmethod
-    def model_validate(cls, *args, **kwargs):  # type: ignore[override]
+    def model_validate(cls, *args, **kwargs):
         obj = super().model_validate(*args, **kwargs)
         if obj.avg_entry_price is not None and obj.average_price != obj.avg_entry_price:
             object.__setattr__(obj, "average_price", obj.avg_entry_price)

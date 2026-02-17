@@ -33,7 +33,7 @@ dev = [
     "pytest-cov>=6.0",
     "hypothesis>=6.120",
     "ruff>=0.14",
-    "mypy>=1.13",
+    "ty>=0.0.1",
     "pre-commit>=4.0",
 ]
 
@@ -72,13 +72,10 @@ known-first-party = ["liq"]
 quote-style = "double"
 indent-style = "space"
 
-[tool.mypy]
-python_version = "3.11"
-strict = true
-warn_return_any = true
-warn_unused_configs = true
-ignore_missing_imports = true
-exclude = ["tests/"]
+[tool.ty.environment]
+extra-paths = ["./src"]
+
+[tool.ty.rules]
 
 [tool.pytest.ini_options]
 minversion = "8.0"

@@ -9,9 +9,9 @@ from pydantic import ValidationError
 
 from liq.core.cash_movement import CashMovement
 from liq.core.corporate_action import CorporateAction
+from liq.core.fill import Fill
 from liq.core.ledger import LedgerEntry
 from liq.core.trade import Trade
-from liq.core.fill import Fill
 
 
 def sample_fill(ts: datetime) -> Fill:

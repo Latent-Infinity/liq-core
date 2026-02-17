@@ -17,13 +17,13 @@ Core data models and type definitions for the LIQ (Latent Infinity Quant) Stack.
 ## Installation
 
 ```bash
-pip install liq-core
+uv pip install liq-core
 ```
 
 Or for development:
 
 ```bash
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 ```
 
 ## Quick Start
@@ -245,7 +245,7 @@ assert bar == bar2  # Exact equality, including Decimal precision
 
 ```bash
 # Install dev dependencies
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 
 # Run tests
 pytest

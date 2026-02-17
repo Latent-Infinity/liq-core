@@ -26,8 +26,8 @@ from liq.core.portfolio import PortfolioState
 from liq.core.position import Position
 from liq.core.quote import Quote
 from liq.core.results import BatchResult, FetchResult, UpdateResult
-from liq.core.trade import Trade
 from liq.core.symbols import normalize_symbol, parse_symbol, validate_symbol
+from liq.core.trade import Trade
 from liq.core.validation import ValidationResult
 
 __all__ = [

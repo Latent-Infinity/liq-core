@@ -2,7 +2,14 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 
 from liq.core.cash_movement import CashMovement
 from liq.core.corporate_action import CorporateAction
@@ -31,7 +38,11 @@ class LedgerEntry(BaseModel):
 
     @field_validator("fill", "cash_movement", "corporate_action")
     @classmethod
-    def validate_conditionals(cls, v, info):  # type: ignore[override]
+    def validate_conditionals(
+        cls,
+        v: Fill | CashMovement | CorporateAction | None,
+        info: ValidationInfo,
+    ) -> Fill | CashMovement | CorporateAction | None:
         entry_type = info.data.get("entry_type")
         if entry_type == "fill" and info.field_name == "fill" and v is None:
             raise ValueError("fill is required when entry_type is fill")

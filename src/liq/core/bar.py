@@ -4,9 +4,8 @@ The Bar model represents a single time period of trading activity,
 with Open, High, Low, Close prices and Volume.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Optional
 
 from pydantic import (
     BaseModel,
@@ -71,7 +70,7 @@ class Bar(BaseModel):
         """Ensure timestamp is timezone-aware."""
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("timestamp must be timezone-aware (UTC expected)")
-        if v.utcoffset() != timezone.utc.utcoffset(v):
+        if v.utcoffset() != UTC.utcoffset(v):
             raise ValueError("timestamp must be UTC")
         return v
 
@@ -123,7 +122,7 @@ class Bar(BaseModel):
         """
         return self.high - self.low
 
-    def true_range_midrange(self, prev_midrange: Optional[Decimal]) -> Decimal:
+    def true_range_midrange(self, prev_midrange: Decimal | None) -> Decimal:
         """Gap-aware true range using midrange vs prior bar."""
         current_mid = self.midrange
         if prev_midrange is None:
@@ -131,7 +130,7 @@ class Bar(BaseModel):
         return max(self.range, abs(current_mid - prev_midrange))
 
     def true_range_hl(
-        self, prev_high: Optional[Decimal], prev_low: Optional[Decimal]
+        self, prev_high: Decimal | None, prev_low: Decimal | None
     ) -> Decimal:
         """Gap-aware true range using high/low vs prior bar."""
         candidates = [self.range]

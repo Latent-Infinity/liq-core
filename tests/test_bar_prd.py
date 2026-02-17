@@ -1,14 +1,14 @@
 """PRD-aligned tests for Bar derived fields."""
 
+from datetime import UTC, datetime
 from decimal import Decimal
-from datetime import datetime, timezone
 
 from liq.core.bar import Bar
 
 
 def test_true_range_midrange() -> None:
     bar = Bar(
-        timestamp=datetime(2024, 1, 1, tzinfo=timezone.utc),
+        timestamp=datetime(2024, 1, 1, tzinfo=UTC),
         symbol="EUR_USD",
         open=Decimal("1.0"),
         high=Decimal("2.0"),
@@ -22,7 +22,7 @@ def test_true_range_midrange() -> None:
 
 def test_true_range_hl() -> None:
     bar = Bar(
-        timestamp=datetime(2024, 1, 1, tzinfo=timezone.utc),
+        timestamp=datetime(2024, 1, 1, tzinfo=UTC),
         symbol="EUR_USD",
         open=Decimal("1.0"),
         high=Decimal("2.0"),

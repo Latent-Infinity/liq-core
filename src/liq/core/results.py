@@ -108,7 +108,7 @@ class BatchResult:
     total: int
     succeeded: int
     failed: int
-    results: list[FetchResult] | list[UpdateResult]
+    results: list[FetchResult | UpdateResult]
 
     def __post_init__(self) -> None:
         """Validate batch totals."""
@@ -124,10 +124,10 @@ class BatchResult:
             return 0.0
         return self.succeeded / self.total * 100
 
-    def get_failures(self) -> list[FetchResult] | list[UpdateResult]:
+    def get_failures(self) -> list[FetchResult | UpdateResult]:
         """Return only failed results."""
         return [r for r in self.results if not r.success]
 
-    def get_successes(self) -> list[FetchResult] | list[UpdateResult]:
+    def get_successes(self) -> list[FetchResult | UpdateResult]:
         """Return only successful results."""
         return [r for r in self.results if r.success]
