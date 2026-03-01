@@ -52,6 +52,7 @@ class Fill(BaseModel):
     commission: Decimal
     slippage: Decimal | None = None
     realized_pnl: Decimal | None = None
+    exchange_order_id: str | None = None
     provider: str | None = None
     is_partial: bool | None = None
     timestamp: datetime

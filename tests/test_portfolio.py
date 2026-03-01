@@ -87,17 +87,21 @@ class TestPortfolioStateValidation:
         )
         assert portfolio.cash == Decimal("-50000")
 
-    def test_rejects_invalid_position_key_symbol(self, sample_timestamp: datetime) -> None:
+    def test_rejects_invalid_position_key_symbol(
+        self, sample_timestamp: datetime
+    ) -> None:
         with pytest.raises(ValidationError):
             PortfolioState(
                 cash=Decimal("100000"),
-                positions={"eur/usd": Position(
-                    symbol="EUR_USD",
-                    quantity=Decimal("10000"),
-                    average_price=Decimal("1.1000"),
-                    realized_pnl=Decimal("0"),
-                    timestamp=sample_timestamp,
-                )},
+                positions={
+                    "eur/usd": Position(
+                        symbol="EUR_USD",
+                        quantity=Decimal("10000"),
+                        average_price=Decimal("1.1000"),
+                        realized_pnl=Decimal("0"),
+                        timestamp=sample_timestamp,
+                    )
+                },
                 timestamp=sample_timestamp,
             )
 
@@ -128,7 +132,9 @@ class TestPortfolioStateDerivedFields:
         )
         assert portfolio.total_market_value == Decimal("0")
 
-    def test_total_market_value_with_positions(self, sample_timestamp: datetime) -> None:
+    def test_total_market_value_with_positions(
+        self, sample_timestamp: datetime
+    ) -> None:
         eur_position = Position(
             symbol="EUR_USD",
             quantity=Decimal("10000"),
@@ -280,12 +286,14 @@ class TestPortfolioStateDerivedFields:
         )
         current_prices = {
             "EUR_USD": Decimal("1.1050"),  # +50 profit (10000 * 0.0050)
-            "BTC-USD": Decimal("51000"),   # +500 profit (0.5 * 1000)
+            "BTC-USD": Decimal("51000"),  # +500 profit (0.5 * 1000)
         }
         total_unrealized = portfolio.total_unrealized_pnl(current_prices)
         assert total_unrealized == Decimal("550")
 
-    def test_total_unrealized_pnl_missing_price(self, sample_timestamp: datetime) -> None:
+    def test_total_unrealized_pnl_missing_price(
+        self, sample_timestamp: datetime
+    ) -> None:
         eur_position = Position(
             symbol="EUR_USD",
             quantity=Decimal("10000"),

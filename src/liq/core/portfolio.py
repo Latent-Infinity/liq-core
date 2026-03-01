@@ -129,7 +129,9 @@ class PortfolioState(BaseModel):
             total += position.unrealized_pnl(current_price)
         return total
 
-    @field_serializer("cash", "unsettled_cash", "realized_pnl", "buying_power", "margin_used")
+    @field_serializer(
+        "cash", "unsettled_cash", "realized_pnl", "buying_power", "margin_used"
+    )
     def serialize_decimal(self, v: Decimal | None) -> str | None:
         """Serialize Decimal as string to preserve precision."""
         return str(v) if v is not None else None

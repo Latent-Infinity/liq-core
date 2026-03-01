@@ -251,7 +251,14 @@ class TestOrderStatus:
 
     def test_all_members(self) -> None:
         members = {m.value for m in OrderStatus}
-        expected = {"pending", "submitted", "partial", "filled", "cancelled", "rejected"}
+        expected = {
+            "pending",
+            "submitted",
+            "partial",
+            "filled",
+            "cancelled",
+            "rejected",
+        }
         assert members == expected
 
 

@@ -333,8 +333,12 @@ class TestBarPropertyBased:
     """Property-based tests using Hypothesis."""
 
     @given(
-        high=st.decimals(min_value=1, max_value=1000, places=4, allow_nan=False, allow_infinity=False),
-        low=st.decimals(min_value=1, max_value=1000, places=4, allow_nan=False, allow_infinity=False),
+        high=st.decimals(
+            min_value=1, max_value=1000, places=4, allow_nan=False, allow_infinity=False
+        ),
+        low=st.decimals(
+            min_value=1, max_value=1000, places=4, allow_nan=False, allow_infinity=False
+        ),
     )
     def test_midrange_is_between_high_and_low(
         self, high: Decimal, low: Decimal
@@ -361,7 +365,13 @@ class TestBarPropertyBased:
         assert bar.midrange <= bar.high
 
     @given(
-        volume=st.decimals(min_value=0, max_value=1_000_000, places=2, allow_nan=False, allow_infinity=False)
+        volume=st.decimals(
+            min_value=0,
+            max_value=1_000_000,
+            places=2,
+            allow_nan=False,
+            allow_infinity=False,
+        )
     )
     def test_volume_always_non_negative(self, volume: Decimal) -> None:
         """Property: volume must be >= 0."""

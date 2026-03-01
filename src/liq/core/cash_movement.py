@@ -16,9 +16,7 @@ class CashMovement(BaseModel):
     timestamp: datetime
     amount: Decimal
     currency: Currency
-    movement_type: str = Field(
-        pattern="^(deposit|withdrawal|dividend|interest|fee)$"
-    )
+    movement_type: str = Field(pattern="^(deposit|withdrawal|dividend|interest|fee)$")
     description: str | None = None
 
     @field_validator("timestamp")

@@ -61,10 +61,18 @@ class OrderRequest(BaseModel):
     stop_price: Decimal | None = None
     time_in_force: TimeInForce = TimeInForce.DAY
     timestamp: datetime
-    strategy_id: str | None = None
+    policy_id: str | None = None
     confidence: float | None = None
     tags: dict[str, str] | None = None
     metadata: dict[str, Any] | None = None
+
+    @field_validator("policy_id")
+    @classmethod
+    def validate_policy_id_non_empty(cls, v: str | None) -> str | None:
+        """Reject empty or whitespace-only policy_id when provided."""
+        if v is not None and not v.strip():
+            raise ValueError("policy_id must be non-empty when provided")
+        return v
 
     @field_validator("symbol")
     @classmethod

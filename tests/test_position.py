@@ -82,7 +82,9 @@ class TestPositionValidation:
             )
         assert "average_price" in str(exc_info.value).lower()
 
-    def test_accepts_zero_average_price_for_flat(self, sample_timestamp: datetime) -> None:
+    def test_accepts_zero_average_price_for_flat(
+        self, sample_timestamp: datetime
+    ) -> None:
         """Zero average price is valid for flat positions."""
         position = Position(
             symbol="EUR_USD",

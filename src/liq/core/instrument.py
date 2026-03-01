@@ -103,5 +103,7 @@ class ProviderMetadata(BaseModel):
     def validate_timestamp_timezone(cls, v: datetime | None) -> datetime | None:
         """Ensure timestamp is timezone-aware when provided."""
         if v is not None and (v.tzinfo is None or v.tzinfo.utcoffset(v) is None):
-            raise ValueError("last_successful_fetch must be timezone-aware (UTC expected)")
+            raise ValueError(
+                "last_successful_fetch must be timezone-aware (UTC expected)"
+            )
         return v

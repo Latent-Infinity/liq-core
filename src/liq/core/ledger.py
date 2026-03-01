@@ -48,8 +48,14 @@ class LedgerEntry(BaseModel):
             raise ValueError("fill is required when entry_type is fill")
         if entry_type == "cash" and info.field_name == "cash_movement" and v is None:
             raise ValueError("cash_movement is required when entry_type is cash")
-        if entry_type == "corporate_action" and info.field_name == "corporate_action" and v is None:
-            raise ValueError("corporate_action is required when entry_type is corporate_action")
+        if (
+            entry_type == "corporate_action"
+            and info.field_name == "corporate_action"
+            and v is None
+        ):
+            raise ValueError(
+                "corporate_action is required when entry_type is corporate_action"
+            )
         return v
 
     @field_validator("entry_type")
@@ -64,5 +70,7 @@ class LedgerEntry(BaseModel):
         if self.entry_type == "cash" and self.cash_movement is None:
             raise ValueError("cash_movement is required when entry_type is cash")
         if self.entry_type == "corporate_action" and self.corporate_action is None:
-            raise ValueError("corporate_action is required when entry_type is corporate_action")
+            raise ValueError(
+                "corporate_action is required when entry_type is corporate_action"
+            )
         return self

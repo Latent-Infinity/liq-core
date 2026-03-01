@@ -226,7 +226,9 @@ class TestProviderMetadataCreation:
         assert "equity" in metadata.asset_classes
         assert "crypto" in metadata.asset_classes
 
-    def test_create_provider_with_optional_fields(self, sample_timestamp: datetime) -> None:
+    def test_create_provider_with_optional_fields(
+        self, sample_timestamp: datetime
+    ) -> None:
         metadata = ProviderMetadata(
             provider_name="polygon",
             asset_classes=["equity"],

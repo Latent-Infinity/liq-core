@@ -117,7 +117,9 @@ class Position(BaseModel):
     @property
     def market_value(self) -> Decimal:
         """Calculate signed market value: quantity * mark price."""
-        mark_price = self.current_price if self.current_price is not None else self.average_price
+        mark_price = (
+            self.current_price if self.current_price is not None else self.average_price
+        )
         return self.quantity * mark_price
 
     def unrealized_pnl(self, current_price: Decimal) -> Decimal:
@@ -143,7 +145,11 @@ class Position(BaseModel):
     @property
     def avg_entry(self) -> Decimal:
         """Expose avg_entry_price alias."""
-        return self.avg_entry_price if self.avg_entry_price is not None else self.average_price
+        return (
+            self.avg_entry_price
+            if self.avg_entry_price is not None
+            else self.average_price
+        )
 
     @classmethod
     def model_validate(cls, *args, **kwargs):

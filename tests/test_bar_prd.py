@@ -17,7 +17,9 @@ def test_true_range_midrange() -> None:
         volume=Decimal("10"),
     )
     prev_mid = Decimal("1.2")
-    assert bar.true_range_midrange(prev_mid) == Decimal("1.5")  # max(range=1.5, |1.25-1.2|=0.05)
+    assert bar.true_range_midrange(prev_mid) == Decimal(
+        "1.5"
+    )  # max(range=1.5, |1.25-1.2|=0.05)
 
 
 def test_true_range_hl() -> None:

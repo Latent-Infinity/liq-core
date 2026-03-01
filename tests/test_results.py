@@ -111,7 +111,9 @@ class TestBatchResult:
     def test_update_batch_result(self) -> None:
         """Test creating a batch result with update results."""
         results = [
-            UpdateResult(symbol="EUR_USD", success=True, gaps_filled=3, total_rows=50000),
+            UpdateResult(
+                symbol="EUR_USD", success=True, gaps_filled=3, total_rows=50000
+            ),
             UpdateResult(symbol="GBP_USD", success=False, error="API error"),
         ]
         batch = BatchResult(total=2, succeeded=1, failed=1, results=results)

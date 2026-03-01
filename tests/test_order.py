@@ -19,7 +19,7 @@ class TestOrderRequestCreation:
             side="buy",
             order_type="market",
             quantity=Decimal("10000"),
-            strategy_id="strat_a",
+            policy_id="strat_a",
             confidence=0.8,
             tags={"version": "v1"},
             timestamp=sample_timestamp,
@@ -30,7 +30,7 @@ class TestOrderRequestCreation:
         assert order.quantity == Decimal("10000")
         assert order.limit_price is None
         assert order.stop_price is None
-        assert order.strategy_id == "strat_a"
+        assert order.policy_id == "strat_a"
         assert order.confidence == 0.8
         assert order.tags == {"version": "v1"}
 
@@ -331,3 +331,72 @@ class TestOrderRequestSerialization:
         assert data["symbol"] == "EUR_USD"
         assert data["side"] == "buy"
         assert data["order_type"] == "market"
+
+
+class TestOrderRequestPolicyId:
+    """Tests for policy_id field extension (Task 0A.9)."""
+
+    def test_policy_id_defaults_to_none(self, sample_timestamp: datetime) -> None:
+        """Backward compatibility: policy_id is optional, defaults to None."""
+        order = OrderRequest(
+            symbol="EUR_USD",
+            side="buy",
+            order_type="market",
+            quantity=Decimal("10000"),
+            timestamp=sample_timestamp,
+        )
+        assert order.policy_id is None
+
+    def test_policy_id_accepted_when_valid(self, sample_timestamp: datetime) -> None:
+        order = OrderRequest(
+            symbol="EUR_USD",
+            side="buy",
+            order_type="market",
+            quantity=Decimal("10000"),
+            timestamp=sample_timestamp,
+            policy_id="policy_v1",
+        )
+        assert order.policy_id == "policy_v1"
+
+    def test_policy_id_rejects_empty_string(self, sample_timestamp: datetime) -> None:
+        with pytest.raises(ValidationError, match="policy_id"):
+            OrderRequest(
+                symbol="EUR_USD",
+                side="buy",
+                order_type="market",
+                quantity=Decimal("10000"),
+                timestamp=sample_timestamp,
+                policy_id="",
+            )
+
+    def test_policy_id_rejects_whitespace_only(
+        self, sample_timestamp: datetime
+    ) -> None:
+        with pytest.raises(ValidationError, match="policy_id"):
+            OrderRequest(
+                symbol="EUR_USD",
+                side="buy",
+                order_type="market",
+                quantity=Decimal("10000"),
+                timestamp=sample_timestamp,
+                policy_id="   ",
+            )
+
+    def test_policy_id_round_trip_serialization(
+        self, sample_timestamp: datetime
+    ) -> None:
+        order = OrderRequest(
+            symbol="EUR_USD",
+            side="buy",
+            order_type="market",
+            quantity=Decimal("10000"),
+            timestamp=sample_timestamp,
+            policy_id="policy_v2",
+        )
+        json_str = order.model_dump_json()
+        order2 = OrderRequest.model_validate_json(json_str)
+        assert order2.policy_id == "policy_v2"
+
+    def test_policy_id_in_json_schema(self) -> None:
+        schema = OrderRequest.model_json_schema()
+        assert "policy_id" in schema["properties"]

@@ -18,4 +18,3 @@ class Trade(BaseModel):
     pnl: Decimal
     return_pct: Decimal
     holding_period: int = Field(gt=0)
-
