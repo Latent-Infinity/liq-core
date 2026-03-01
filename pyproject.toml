@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "liq-core"
-version = "0.1.0"
+version = "0.1.1"
 description = "Core data models and type definitions for the LIQ Stack"
 readme = "README.md"
 license = "MIT"

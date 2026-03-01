@@ -62,5 +62,3 @@ __all__ = [
     "parse_symbol",
     "validate_symbol",
 ]
-
-__version__ = "0.2.0"
