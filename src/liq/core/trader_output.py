@@ -66,7 +66,7 @@ class TraderOutput(BaseModel):
     rationales: list[str] = Field(default_factory=list)
     no_trade_rationale: str | None = None
 
-    # Phase-2 optional fields (not risk-bearing)
+    # Stage-2 optional fields (not risk-bearing)
     confidence: float | None = Field(default=None, ge=0.0, le=1.0)
     invalidation_conditions: dict[str, Any] | None = None
     expected_slippage_bps: float | None = None

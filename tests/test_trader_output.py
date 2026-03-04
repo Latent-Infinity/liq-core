@@ -1,7 +1,7 @@
 """Tests for TraderOutput, SwapAction, RebalanceAction (Task 0A.19).
 
 Sections 2.2, 2.3 — discriminated union actions, NO_TRADE pattern,
-per-action rationales, optional Phase-2 fields, round-trip serialization.
+per-action rationales, optional Stage-2 fields, round-trip serialization.
 """
 
 from decimal import Decimal
@@ -205,7 +205,7 @@ class TestActionsWithRationales:
 
 
 # ---------------------------------------------------------------------------
-# Optional Phase-2 fields
+# Optional Stage-2 fields
 # ---------------------------------------------------------------------------
 
 

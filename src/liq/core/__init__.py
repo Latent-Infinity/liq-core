@@ -29,6 +29,15 @@ from liq.core.results import BatchResult, FetchResult, UpdateResult
 from liq.core.symbols import normalize_symbol, parse_symbol, validate_symbol
 from liq.core.trade import Trade
 from liq.core.validation import ValidationResult
+from liq.core.security import (
+    REDACTED_SECRET_VALUE,
+    SENSITIVE_CONTEXT_KEYS,
+    hash_fingerprint,
+    is_sensitive_key,
+    mask_sensitive_context,
+    redact_sensitive_payload,
+    serialize_sensitive_payload,
+)
 
 __all__ = [
     # Models
@@ -61,4 +70,12 @@ __all__ = [
     "normalize_symbol",
     "parse_symbol",
     "validate_symbol",
+    # Security helpers
+    "REDACTED_SECRET_VALUE",
+    "SENSITIVE_CONTEXT_KEYS",
+    "hash_fingerprint",
+    "is_sensitive_key",
+    "mask_sensitive_context",
+    "redact_sensitive_payload",
+    "serialize_sensitive_payload",
 ]
