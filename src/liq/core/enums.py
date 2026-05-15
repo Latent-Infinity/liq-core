@@ -25,6 +25,26 @@ class AssetClass(StrEnum):
     OPTION = "option"
 
 
+class RegimeId(StrEnum):
+    """Supported high-level market regime labels.
+
+    Attributes:
+        trend: Directional, persistent market behavior
+        range: Mean-reverting or range-bound market behavior
+        neutral: No strong trend or range classification
+        fallback: Safe fallback label when classification is unavailable
+        no_trade: Explicit no-trade regime label
+        empty: Empty or unavailable regime label
+    """
+
+    trend = "trend"
+    range = "range"
+    neutral = "neutral"
+    fallback = "fallback"
+    no_trade = "no_trade"
+    empty = "empty"
+
+
 class OrderSide(StrEnum):
     """Direction of a trading order.
 
