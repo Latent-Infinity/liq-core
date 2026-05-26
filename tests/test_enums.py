@@ -99,13 +99,22 @@ class TestTimeInForce:
     def test_fok_value(self) -> None:
         assert TimeInForce.FOK.value == "fok"
 
+    def test_clo_value(self) -> None:
+        """CLO = closing-auction (TS API "On Close" duration).
+
+        Lowercase value follows the existing enum convention; brokers
+        that need uppercase API strings ("CLO") translate at their
+        adapter boundary.
+        """
+        assert TimeInForce.CLO.value == "clo"
+
     def test_str_enum_conversion(self) -> None:
         assert str(TimeInForce.GTC) == "gtc"
         assert TimeInForce("day") == TimeInForce.DAY
 
     def test_all_members(self) -> None:
         members = {m.value for m in TimeInForce}
-        assert members == {"day", "gtc", "ioc", "fok"}
+        assert members == {"day", "gtc", "ioc", "fok", "clo"}
 
 
 class TestProvider:

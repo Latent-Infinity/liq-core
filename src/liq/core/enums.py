@@ -81,12 +81,15 @@ class TimeInForce(StrEnum):
         GTC: Good til canceled - remains active until filled or canceled
         IOC: Immediate or cancel - fill immediately or cancel
         FOK: Fill or kill - fill entirely or cancel
+        CLO: Closing auction (TradeStation "On Close"); broker adapters
+            translate to provider-native casing at submission time
     """
 
     DAY = "day"
     GTC = "gtc"
     IOC = "ioc"
     FOK = "fok"
+    CLO = "clo"
 
 
 class Provider(StrEnum):
