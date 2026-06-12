@@ -4,6 +4,7 @@ These models provide structured results for fetch and update operations,
 replacing untyped dictionaries with validated, immutable dataclasses.
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 
@@ -108,7 +109,9 @@ class BatchResult:
     total: int
     succeeded: int
     failed: int
-    results: list[FetchResult | UpdateResult]
+    # ``Sequence`` (covariant) so callers can pass ``list[FetchResult]``
+    # or ``list[UpdateResult]`` without rebuilding into a widened list.
+    results: Sequence[FetchResult | UpdateResult]
 
     def __post_init__(self) -> None:
         """Validate batch totals."""
