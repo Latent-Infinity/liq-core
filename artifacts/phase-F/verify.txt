@@ -1,0 +1,34 @@
+=== liq-core verify (README §Development: pytest + pytest --cov + ruff check) ===
+           [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.11-final-0 _______________
+
+Name                               Stmts   Miss Branch BrPart  Cover   Missing
+------------------------------------------------------------------------------
+src/liq/core/__init__.py              17      0      0      0   100%
+src/liq/core/bar.py                   74      2     26      4    94%   74, 129, 137->139, 139->141
+src/liq/core/cash_movement.py         17      0      2      0   100%
+src/liq/core/corporate_action.py      16      1      2      1    89%   25
+src/liq/core/enums.py                 61      0      0      0   100%
+src/liq/core/fill.py                  69      0     12      0   100%
+src/liq/core/freshness.py             35      0     10      0   100%
+src/liq/core/instrument.py            39      1      2      1    95%   106
+src/liq/core/ledger.py                44      6     14      6    79%   36, 48, 50, 56, 71, 73
+src/liq/core/observation.py           36      0      2      0   100%
+src/liq/core/order.py                 97      0     30      0   100%
+src/liq/core/policy_manifest.py       65      0     14      0   100%
+src/liq/core/portfolio.py             63      1     10      1    97%   62
+src/liq/core/position.py              73      8     12      1    85%   89, 148, 156-161
+src/liq/core/quote.py                 56      1     12      1    97%   104
+src/liq/core/results.py               48      0     18      0   100%
+src/liq/core/security.py              53      6     26      4    85%   38, 101, 104, 109-112
+src/liq/core/symbols.py               44      4     26      3    87%   62, 80->77, 84-87
+src/liq/core/trade.py                 11      0      0      0   100%
+src/liq/core/trader_output.py         42      0      8      0   100%
+src/liq/core/validation.py             9      0      0      0   100%
+------------------------------------------------------------------------------
+TOTAL                                969     30    226     22    95%
+Required test coverage of 90% reached. Total coverage: 94.98%
+
+=== ruff check src/ tests/ ===
+All checks passed!
