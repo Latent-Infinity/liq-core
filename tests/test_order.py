@@ -1,6 +1,6 @@
 """Tests for liq.core.order module."""
 
-from datetime import datetime
+from datetime import UTC, datetime, timedelta, timezone
 from decimal import Decimal
 from uuid import UUID
 
@@ -120,6 +120,19 @@ class TestOrderRequestValidation:
                 timestamp=datetime(2024, 1, 15),  # No timezone
             )
         assert "timezone" in str(exc_info.value).lower()
+
+    def test_normalizes_non_utc_datetime_to_utc(self) -> None:
+        timestamp = datetime(2024, 1, 15, 7, tzinfo=timezone(timedelta(hours=-5)))
+        order = OrderRequest(
+            symbol="EUR_USD",
+            side="buy",
+            order_type="market",
+            quantity=Decimal("10000"),
+            timestamp=timestamp,
+        )
+
+        assert order.timestamp == datetime(2024, 1, 15, 12, tzinfo=UTC)
+        assert order.timestamp.tzinfo == UTC
 
     def test_rejects_zero_quantity(self, sample_timestamp: datetime) -> None:
         with pytest.raises(ValidationError) as exc_info:

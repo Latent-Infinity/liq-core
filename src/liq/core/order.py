@@ -4,7 +4,7 @@ The OrderRequest model represents an intent to enter or exit a position.
 It captures all parameters needed to submit an order to a broker.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
 from uuid import UUID, uuid4
@@ -106,10 +106,9 @@ class OrderRequest(BaseModel):
     @field_validator("timestamp")
     @classmethod
     def validate_timestamp_timezone(cls, v: datetime) -> datetime:
-        """Ensure timestamp is timezone-aware."""
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("timestamp must be timezone-aware (UTC expected)")
-        return v
+        return v.astimezone(UTC)
 
     @field_validator("quantity")
     @classmethod
