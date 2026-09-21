@@ -30,9 +30,14 @@ class OrderRequest(BaseModel):
         symbol: Instrument symbol
         side: Buy or sell
         order_type: Market, limit, stop, or stop_limit
-        quantity: Order quantity (must be > 0)
+        quantity: Order size in **shares / base-asset units** — never dollars
+            (must be > 0). Every broker adapter sends this value to its venue as
+            a share or base-asset count, so that is what it means here.
         limit_price: Required for limit and stop_limit orders
         stop_price: Required for stop and stop_limit orders
+        reference_price: Unit price this order was sized at. Optional, but a
+            MARKET order without it has no computable notional, because it
+            carries neither a limit nor a stop price.
         time_in_force: Order duration (default: day)
         timestamp: Order creation time (UTC, timezone-aware)
 
@@ -40,6 +45,7 @@ class OrderRequest(BaseModel):
         - quantity > 0
         - limit_price > 0 (when provided)
         - stop_price > 0 (when provided)
+        - reference_price > 0 (when provided)
         - LIMIT orders require limit_price
         - STOP orders require stop_price
         - STOP_LIMIT orders require both limit_price and stop_price
@@ -56,9 +62,23 @@ class OrderRequest(BaseModel):
     symbol: str
     side: OrderSide
     order_type: OrderType
-    quantity: Decimal
+    quantity: Decimal = Field(
+        description=(
+            "Order size in shares / base-asset units — never dollars. Every "
+            "broker adapter submits this value to its venue as a share or "
+            "base-asset count."
+        )
+    )
     limit_price: Decimal | None = None
     stop_price: Decimal | None = None
+    reference_price: Decimal | None = Field(
+        default=None,
+        description=(
+            "Unit price this order was sized at, in account currency. A MARKET "
+            "order carries no limit or stop price, so without this its notional "
+            "cannot be computed for capital checks."
+        ),
+    )
     time_in_force: TimeInForce = TimeInForce.DAY
     timestamp: datetime
     policy_id: str | None = None
@@ -115,6 +135,14 @@ class OrderRequest(BaseModel):
             raise ValueError("stop_price must be > 0")
         return v
 
+    @field_validator("reference_price")
+    @classmethod
+    def validate_reference_price_positive(cls, v: Decimal | None) -> Decimal | None:
+        """Ensure reference_price is positive when provided."""
+        if v is not None and v <= 0:
+            raise ValueError("reference_price must be > 0")
+        return v
+
     @field_validator("confidence")
     @classmethod
     def validate_confidence_range(cls, v: float | None) -> float | None:
@@ -141,7 +169,7 @@ class OrderRequest(BaseModel):
                 raise ValueError("stop_price is required for STOP_LIMIT orders")
         return self
 
-    @field_serializer("quantity", "limit_price", "stop_price")
+    @field_serializer("quantity", "limit_price", "stop_price", "reference_price")
     def serialize_decimal(self, v: Decimal | None) -> str | None:
         """Serialize Decimal as string to preserve precision."""
         return str(v) if v is not None else None

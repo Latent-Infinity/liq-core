@@ -7,6 +7,7 @@ from uuid import UUID
 import pytest
 from pydantic import ValidationError
 
+from liq.core.enums import OrderSide, OrderType
 from liq.core.order import OrderRequest
 
 
@@ -400,3 +401,94 @@ class TestOrderRequestPolicyId:
     def test_policy_id_in_json_schema(self) -> None:
         schema = OrderRequest.model_json_schema()
         assert "policy_id" in schema["properties"]
+
+
+class TestOrderRequestQuantityUnit:
+    """The unit of ``quantity`` is part of the contract, not a comment.
+
+    An undefined unit let two callers disagree about whether ``quantity`` meant
+    shares or dollars, while every broker adapter sent it as shares. These pin
+    the unit where a reader and a tool can both see it.
+    """
+
+    def test_quantity_documents_its_unit_in_the_schema(self) -> None:
+        description = OrderRequest.model_json_schema()["properties"]["quantity"][
+            "description"
+        ]
+        assert "share" in description.lower()
+        assert "dollar" in description.lower()  # states what it is *not*
+
+
+class TestOrderRequestReferencePrice:
+    """``reference_price`` lets a MARKET order carry the price it was sized at.
+
+    Without it the execution engine cannot compute a MARKET order's notional —
+    there is no limit or stop price to multiply by — so a dollar-denominated
+    capital guardrail silently received a share count instead.
+    """
+
+    def test_reference_price_defaults_to_none(self, sample_timestamp: datetime) -> None:
+        order = OrderRequest(
+            symbol="EUR_USD",
+            side=OrderSide.BUY,
+            order_type=OrderType.MARKET,
+            quantity=Decimal("10000"),
+            timestamp=sample_timestamp,
+        )
+        assert order.reference_price is None
+
+    def test_reference_price_accepted_when_positive(
+        self, sample_timestamp: datetime
+    ) -> None:
+        order = OrderRequest(
+            symbol="EUR_USD",
+            side=OrderSide.BUY,
+            order_type=OrderType.MARKET,
+            quantity=Decimal("10000"),
+            timestamp=sample_timestamp,
+            reference_price=Decimal("1.1000"),
+        )
+        assert order.reference_price == Decimal("1.1000")
+
+    def test_rejects_zero_reference_price(self, sample_timestamp: datetime) -> None:
+        with pytest.raises(ValidationError) as exc_info:
+            OrderRequest(
+                symbol="EUR_USD",
+                side=OrderSide.BUY,
+                order_type=OrderType.MARKET,
+                quantity=Decimal("10000"),
+                timestamp=sample_timestamp,
+                reference_price=Decimal("0"),
+            )
+        assert "reference_price" in str(exc_info.value).lower()
+
+    def test_rejects_negative_reference_price(self, sample_timestamp: datetime) -> None:
+        with pytest.raises(ValidationError) as exc_info:
+            OrderRequest(
+                symbol="EUR_USD",
+                side=OrderSide.BUY,
+                order_type=OrderType.MARKET,
+                quantity=Decimal("10000"),
+                timestamp=sample_timestamp,
+                reference_price=Decimal("-1"),
+            )
+        assert "reference_price" in str(exc_info.value).lower()
+
+    def test_reference_price_round_trips_without_precision_loss(
+        self, sample_timestamp: datetime
+    ) -> None:
+        """Serialized as a string like the other Decimal prices, not a float."""
+        order = OrderRequest(
+            symbol="EUR_USD",
+            side=OrderSide.BUY,
+            order_type=OrderType.MARKET,
+            quantity=Decimal("10000"),
+            timestamp=sample_timestamp,
+            reference_price=Decimal("1.10005"),
+        )
+        restored = OrderRequest.model_validate_json(order.model_dump_json())
+        assert restored.reference_price == Decimal("1.10005")
+
+    def test_reference_price_in_json_schema(self) -> None:
+        schema = OrderRequest.model_json_schema()
+        assert "reference_price" in schema["properties"]
