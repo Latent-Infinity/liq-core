@@ -114,7 +114,7 @@ class OrderRequest(BaseModel):
     @classmethod
     def validate_quantity_positive(cls, v: Decimal) -> Decimal:
         """Ensure quantity is positive."""
-        if v <= 0:
+        if not v.is_finite() or v <= 0:
             raise ValueError("quantity must be > 0")
         return v
 
@@ -122,7 +122,7 @@ class OrderRequest(BaseModel):
     @classmethod
     def validate_limit_price_positive(cls, v: Decimal | None) -> Decimal | None:
         """Ensure limit_price is positive when provided."""
-        if v is not None and v <= 0:
+        if v is not None and (not v.is_finite() or v <= 0):
             raise ValueError("limit_price must be > 0")
         return v
 
@@ -130,7 +130,7 @@ class OrderRequest(BaseModel):
     @classmethod
     def validate_stop_price_positive(cls, v: Decimal | None) -> Decimal | None:
         """Ensure stop_price is positive when provided."""
-        if v is not None and v <= 0:
+        if v is not None and (not v.is_finite() or v <= 0):
             raise ValueError("stop_price must be > 0")
         return v
 
@@ -138,7 +138,7 @@ class OrderRequest(BaseModel):
     @classmethod
     def validate_reference_price_positive(cls, v: Decimal | None) -> Decimal | None:
         """Ensure reference_price is positive when provided."""
-        if v is not None and v <= 0:
+        if v is not None and (not v.is_finite() or v <= 0):
             raise ValueError("reference_price must be > 0")
         return v
 

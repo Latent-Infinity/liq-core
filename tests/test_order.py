@@ -297,6 +297,24 @@ class TestOrderRequestImmutability:
             order.symbol = "USD_JPY"  # type: ignore[misc]
 
 
+@pytest.mark.parametrize(
+    ("order_type", "price_field"),
+    [("market", "reference_price"), ("limit", "limit_price"), ("stop", "stop_price")],
+)
+def test_rejects_non_finite_order_prices(
+    sample_timestamp: datetime, order_type: str, price_field: str
+) -> None:
+    with pytest.raises(ValidationError):
+        OrderRequest(
+            symbol="EUR_USD",
+            side="buy",
+            order_type=order_type,
+            quantity=Decimal("10000"),
+            timestamp=sample_timestamp,
+            **{price_field: Decimal("Infinity")},
+        )
+
+
 class TestOrderRequestSerialization:
     """Tests for OrderRequest serialization."""
 
