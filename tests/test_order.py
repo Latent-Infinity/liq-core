@@ -156,6 +156,23 @@ class TestOrderRequestValidation:
             )
         assert "quantity" in str(exc_info.value).lower()
 
+    @pytest.mark.parametrize(
+        "quantity", [Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")]
+    )
+    def test_rejects_non_finite_quantity(
+        self, sample_timestamp: datetime, quantity: Decimal
+    ) -> None:
+        with pytest.raises(ValidationError) as exc_info:
+            OrderRequest(
+                symbol="EUR_USD",
+                side="buy",
+                order_type="market",
+                quantity=quantity,
+                timestamp=sample_timestamp,
+            )
+
+        assert "quantity" in str(exc_info.value).lower()
+
     def test_limit_order_requires_limit_price(self, sample_timestamp: datetime) -> None:
         with pytest.raises(ValidationError) as exc_info:
             OrderRequest(
