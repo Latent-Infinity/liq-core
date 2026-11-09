@@ -10,9 +10,17 @@ hashing per Section 0.10.
 
 import hashlib
 import json
+from datetime import UTC, datetime
 from typing import Any, Literal, Self
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    AwareDatetime,
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 StalenessClassification = Literal["fresh", "stale", "missing"]
 
@@ -31,6 +39,11 @@ class SourceFreshness(BaseModel):
     source_id: str
     last_update: AwareDatetime
     staleness_classification: StalenessClassification
+
+    @field_validator("last_update")
+    @classmethod
+    def normalize_last_update(cls, value: datetime) -> datetime:
+        return value.astimezone(UTC)
 
 
 class Observation(BaseModel):

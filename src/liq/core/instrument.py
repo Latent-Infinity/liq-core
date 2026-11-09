@@ -3,7 +3,7 @@
 These models represent tradeable instruments and data provider configuration.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -106,4 +106,4 @@ class ProviderMetadata(BaseModel):
             raise ValueError(
                 "last_successful_fetch must be timezone-aware (UTC expected)"
             )
-        return v
+        return v.astimezone(UTC) if v is not None else None

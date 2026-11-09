@@ -1,6 +1,6 @@
 """Corporate action model for splits, dividends, spinoffs, mergers."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -22,4 +22,4 @@ class CorporateAction(BaseModel):
     def validate_timestamp_timezone(cls, v: datetime) -> datetime:
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("ex_date must be timezone-aware (UTC expected)")
-        return v
+        return v.astimezone(UTC)

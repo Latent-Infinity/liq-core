@@ -1,6 +1,6 @@
 """Ledger entry model capturing fills, cash movements, and corporate actions."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from pydantic import (
     BaseModel,
@@ -34,7 +34,7 @@ class LedgerEntry(BaseModel):
     def validate_timestamp_timezone(cls, v: datetime) -> datetime:
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("timestamp must be timezone-aware (UTC expected)")
-        return v
+        return v.astimezone(UTC)
 
     @field_validator("fill", "cash_movement", "corporate_action")
     @classmethod

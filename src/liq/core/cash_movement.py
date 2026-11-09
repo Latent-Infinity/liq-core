@@ -1,6 +1,6 @@
 """Cash movement model for deposits, withdrawals, dividends, interest, fees."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -24,4 +24,4 @@ class CashMovement(BaseModel):
     def validate_timestamp_timezone(cls, v: datetime) -> datetime:
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("timestamp must be timezone-aware (UTC expected)")
-        return v
+        return v.astimezone(UTC)

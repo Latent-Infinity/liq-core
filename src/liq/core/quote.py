@@ -4,7 +4,7 @@ The Quote model represents a point-in-time snapshot of the best
 bid and ask prices for an instrument.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from pydantic import (
@@ -62,7 +62,7 @@ class Quote(BaseModel):
         """Ensure timestamp is timezone-aware."""
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("timestamp must be timezone-aware (UTC expected)")
-        return v
+        return v.astimezone(UTC)
 
     @field_validator("bid", "ask")
     @classmethod

@@ -3,7 +3,7 @@
 The Position model represents a holding in a single instrument.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from pydantic import (
@@ -71,7 +71,7 @@ class Position(BaseModel):
         """Ensure timestamp is timezone-aware."""
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("timestamp must be timezone-aware (UTC expected)")
-        return v
+        return v.astimezone(UTC)
 
     @field_validator("average_price")
     @classmethod

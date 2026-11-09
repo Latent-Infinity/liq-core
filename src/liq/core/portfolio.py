@@ -4,7 +4,7 @@ The PortfolioState model represents the complete state of a portfolio
 at a point in time, including cash and all positions.
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
@@ -75,7 +75,7 @@ class PortfolioState(BaseModel):
         """Ensure timestamp is timezone-aware."""
         if v.tzinfo is None or v.tzinfo.utcoffset(v) is None:
             raise ValueError("timestamp must be timezone-aware (UTC expected)")
-        return v
+        return v.astimezone(UTC)
 
     @property
     def total_market_value(self) -> Decimal:
